@@ -25,7 +25,6 @@ header {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -93,13 +92,6 @@ section {
 footer {
   height: 200px;
   background-color: black;
-}
-
-/* -------------------  TABLET  --------------------- */
-@media (min-width: 768px) {
-  header {
-    height: 100vh;
-  }
 }
 
 /* -------------------  DESKTOP  -------------------- */
