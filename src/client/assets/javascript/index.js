@@ -80,14 +80,14 @@ async function handleCreateRace() {
 	// console.log(player_id)
 
 	const race = await createRace(player_id,track_id);
-	console.log(race)
 
 	// render starting UI
 	renderAt('#race', renderRaceStartView(race.Track, race.Cars))
-	// TODO - update the store with the race id
+	store.race_id = race.ID
 
 	// The race has been created, now start the countdown
 	// TODO - call the async function runCountdown
+	await runCountdown()
 
 	// TODO - call the async function startRace
 
@@ -123,12 +123,13 @@ async function runCountdown() {
 
 		return new Promise(resolve => {
 			// TODO - use Javascript's built in setInterval method to count down once per second
-
-			// run this DOM manipulation to decrement the countdown for the user
-			document.getElementById('big-numbers').innerHTML = --timer
-
-			// TODO - if the countdown is done, clear the interval, resolve the promise, and return
-
+			const tick = setInterval(function(){
+				document.getElementById('big-numbers').innerHTML = --timer;
+				if (timer === 0){
+					clearInterval(tick)
+					resolve()
+				}
+			}, 1000)
 		})
 	} catch(error) {
 		console.log(error);
@@ -136,8 +137,6 @@ async function runCountdown() {
 }
 
 function handleSelectPodRacer(target) {
-	console.log("selected a pod", target.id)
-
 	// remove class selected from all racer options
 	const selected = document.querySelector('#racers .selected')
 	if(selected) {
@@ -151,8 +150,6 @@ function handleSelectPodRacer(target) {
 }
 
 function handleSelectTrack(target) {
-	console.log("selected a track", target.id)
-
 	// remove class selected from all track options
 	const selected = document.querySelector('#tracks .selected')
 	if(selected) {
