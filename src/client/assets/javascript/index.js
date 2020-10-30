@@ -93,12 +93,24 @@ async function handleCreateRace() {
 	await startRace(store.race_id)
 
 	// TODO - call the async function runRace
+	runRace(store.race_id).catch(e => console.log('error at runRace:: ',e))
 }
 
 function runRace(raceID) {
 	return new Promise(resolve => {
 	// TODO - use Javascript's built in setInterval method to get race info every 500ms
+	const raceInterval = setInterval(function(){
+		getRace(raceID).then(res => {
+			console.log(res)
+			res.status === 'in-progress' && renderAt('#leaderBoard', raceProgress(res.positions))
 
+			if (res.status === 'finished'){
+				clearInterval(raceInterval)
+				renderAt('#race', resultsView(res.positions))
+				resolve(res) // resolve the promise
+			}
+		})
+	}, 1000)
 	/*
 		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
 
@@ -119,7 +131,7 @@ function runRace(raceID) {
 async function runCountdown() {
 	try {
 		// wait for the DOM to load
-		await delay(1000)
+		await delay(500)
 		let timer = 3
 
 		return new Promise(resolve => {
@@ -147,7 +159,7 @@ function handleSelectPodRacer(target) {
 	// add class selected to current target
 	target.classList.add('selected')
 
-	store.player_id = target.id
+	store.player_id = +target.id
 }
 
 function handleSelectTrack(target) {
@@ -160,7 +172,7 @@ function handleSelectTrack(target) {
 	// add class selected to current target
 	target.classList.add('selected')
 
-	store.track_id = target.id
+	store.track_id = +target.id
 }
 
 function handleAccelerate() {
@@ -267,6 +279,7 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
+
 	let userPlayer = positions.find(e => e.id === store.player_id)
 	userPlayer.driver_name += " (you)"
 
